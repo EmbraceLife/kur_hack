@@ -10,4 +10,5 @@
 5. How to hack to remove duplicated sections when `kur dump mnist.yml`?
 
 ## Map out Kur performance logic
+Checkout maps [here](https://github.com/EmbraceLife/kur_hack/tree/master/kur_map)
 1. How to Kur trains from console `kur train mnist.yml` and hide python API behind?

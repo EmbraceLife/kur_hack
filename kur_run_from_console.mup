@@ -1,0 +1,189 @@
+{
+  "title": "kur -vv train mnist.yml --step",
+  "id": 1,
+  "formatVersion": 2,
+  "ideas": {
+    "1": {
+      "title": "__main__.py",
+      "id": 5,
+      "ideas": {
+        "1": {
+          "title": "main()",
+          "id": 7,
+          "ideas": {
+            "1": {
+              "title": "args = parse_args()",
+              "id": 9,
+              "ideas": {
+                "2": {
+                  "title": "parse_args()",
+                  "id": 17,
+                  "ideas": {
+                    "1": {
+                      "title": "Goal: get console args inputs into python",
+                      "id": 16,
+                      "attr": {
+                        "style": {}
+                      }
+                    },
+                    "2": {
+                      "title": "create a parser",
+                      "id": 19,
+                      "attr": {
+                        "attachment": {
+                          "contentType": "text/html",
+                          "content": "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\"><div style=\"text-align: left;\"><font color=\"#4f4f4f\" face=\"Helvetica, Arial Unicode MS, sans-serif\"><span style=\"font-size: 12px; white-space: pre-wrap;\"><b>parser = argparse.ArgumentParser(</b></span></font></div><div style=\"text-align: left;\"><font color=\"#4f4f4f\" face=\"Helvetica, Arial Unicode MS, sans-serif\"><span style=\"font-size: 12px; white-space: pre-wrap;\"><b>\t\tdescription='Descriptive deep learning')</b></span></font></div></blockquote>"
+                        },
+                        "style": {}
+                      },
+                      "ideas": {
+                        "1": {
+                          "title": "parser.",
+                          "id": 25
+                        }
+                      }
+                    },
+                    "3": {
+                      "title": "add arguments to this parser",
+                      "id": 20,
+                      "attr": {
+                        "attachment": {
+                          "contentType": "text/html",
+                          "content": "<div>parser.add_argument('--no-color', action='store_true',</div><div><span class=\"Apple-tab-span\" style=\"white-space:pre\"><span style=\"white-space: normal;\">\t\t</span></span>help='Disable colorful logging.')</div><div><br></div><div>parser.add_argument('-v', '--verbose', default=0, action='count',</div><div><span class=\"Apple-tab-span\" style=\"white-space:pre\"><span style=\"white-space: normal;\">\t\t</span></span>help='Increase verbosity. Can be specified twice for debug-level '</div><div><span class=\"Apple-tab-span\" style=\"white-space:pre\"><span style=\"white-space: normal;\">\t\t\t</span></span>'output.')</div><div><br></div><div>parser.add_argument('--monitor', action='store_true',</div><div><span class=\"Apple-tab-span\" style=\"white-space:pre\"><span style=\"white-space: normal;\">\t\t</span></span>help='Run Kur in monitor mode, which tries to recover from critical '</div><div><span class=\"Apple-tab-span\" style=\"white-space:pre\"><span style=\"white-space: normal;\">\t\t\t</span></span>'errors, like segmentation faults.')</div><div><br></div><div>parser.add_argument('--version', action='store_true',</div><div><span class=\"Apple-tab-span\" style=\"white-space:pre\"><span style=\"white-space: normal;\">\t\t</span></span>help='Display version and exit.')</div>"
+                        },
+                        "style": {}
+                      },
+                      "ideas": {
+                        "1": {
+                          "title": "--version\n--monitor\n--no-color\n--verbose",
+                          "id": 24
+                        }
+                      }
+                    },
+                    "4": {
+                      "title": "create subparsers container",
+                      "id": 21,
+                      "attr": {
+                        "attachment": {
+                          "contentType": "text/html",
+                          "content": "subparsers = parser.add_subparsers(dest='cmd', help='Sub-command help.')"
+                        },
+                        "style": {}
+                      },
+                      "ideas": {
+                        "1": {
+                          "title": "subparsers",
+                          "id": 26
+                        }
+                      }
+                    },
+                    "5": {
+                      "title": "add each subparser and its arguments",
+                      "id": 22,
+                      "attr": {
+                        "attachment": {
+                          "contentType": "text/html",
+                          "content": "<div>subparser = subparsers.add_parser('train', help='Trains a model.')</div><div>subparser.add_argument('--step', action='store_true',</div><div><span class=\"Apple-tab-span\" style=\"white-space:pre\"><span style=\"white-space: normal;\">\t\t</span></span>help='Interactive debug; prompt user before submitting each batch.')</div><div>subparser.add_argument('kurfile', help='The Kurfile to use.')</div><div><span class=\"Apple-tab-span\" style=\"white-space:pre\"><span style=\"white-space: normal;\">\t</span></span>### assign args.func = train()</div><div>subparser.set_defaults(func=train)</div>"
+                        },
+                        "style": {}
+                      },
+                      "ideas": {
+                        "1": {
+                          "title": "argument: --step",
+                          "id": 23
+                        },
+                        "2": {
+                          "title": "arg.func: train",
+                          "id": 29
+                        },
+                        "0.5": {
+                          "title": "subparser: train",
+                          "id": 28
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "2": {
+              "title": "engine = JinjaEngine()\nsetattr(args, 'engine', engine)\n",
+              "id": 11,
+              "ideas": {
+                "1": {
+                  "title": "args.engine defined here not in parse_args() from console",
+                  "id": 36
+                }
+              }
+            },
+            "3": {
+              "title": "...",
+              "id": 13
+            },
+            "4": {
+              "title": "sys.exit(args.func(args) or 0)",
+              "id": 15,
+              "ideas": {
+                "1": {
+                  "title": "sys.exit()",
+                  "id": 30,
+                  "ideas": {
+                    "1": {
+                      "title": "how to exit the program\nor what to do before exit",
+                      "id": 31
+                    }
+                  }
+                },
+                "2": {
+                  "title": "args.func(args)",
+                  "id": 32,
+                  "ideas": {
+                    "1": {
+                      "title": "== train(args)",
+                      "id": 33,
+                      "ideas": {
+                        "1": {
+                          "title": "train()",
+                          "id": 34,
+                          "ideas": {
+                            "1": {
+                              "title": "need args.engine",
+                              "id": 37
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "1.5": {
+              "title": "...",
+              "id": 12
+            }
+          }
+        }
+      },
+      "attr": {
+        "style": {}
+      }
+    }
+  },
+  "links": [
+    {
+      "ideaIdFrom": 36,
+      "ideaIdTo": 34,
+      "attr": {
+        "style": {
+          "color": "#99cc00",
+          "lineStyle": "solid",
+          "arrow": true
+        }
+      }
+    }
+  ],
+  "attr": {
+    "style": {}
+  }
+}

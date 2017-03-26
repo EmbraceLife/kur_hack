@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
+import pdb
 import os
 import json
 import signal
@@ -28,6 +28,7 @@ from .utils import logcolor
 from . import Kurfile
 from .engine import JinjaEngine
 
+from collections import OrderedDict
 # get logger a name for display
 logger = logging.getLogger(__name__)
 
@@ -44,13 +45,14 @@ def parse_kurfile(filename, engine):
 
 		Kurfile instance
 	"""
+	# pdb.set_trace()
 	## spec is a kurfile object
 	spec = Kurfile(filename, engine)
 	# logger.warning("spec before parse(): %s", spec.data)
 
 	#### Add stack and structure to spec.data
 	## without it error msg: find no model
-	spec.parse()
+	# spec.parse()
 	# logger.warning('spec after parse(): %s', spec.data)
 	return spec
 
@@ -58,14 +60,19 @@ def parse_kurfile(filename, engine):
 def dump(args):
 	""" Dumps the Kurfile to stdout as a JSON blob.
 	"""
+	# pdb.set_trace()
 	### parse kurfile.yml into parts to be used in python code
 	spec = parse_kurfile(args.kurfile, args.engine)
+
+
+	#### Attempted to use OrderedDict to put spec.data in order, but failed  https://hyp.is/eIktRBFMEee-VxsWXyfpbQ/www.safaribooksonline.com/library/view/python-cookbook-3rd/9781449357337/ch01s07.html
 
 
 	### spec.data store all info from kurfile.yml
 	### print out spec.data as json dictionary
 	# import json; json.dumps?
     # sort_keys=True, for better organisation
+
 	print(json.dumps(spec.data, sort_keys=True, indent=4))
 
 ###############################################################################
@@ -316,10 +323,12 @@ def prepare_data(args):
 def version(args):							# pylint: disable=unused-argument
 	""" Prints the Kur version and exits.
 	"""
+
 	logger.info("version(args) is running ...")
 	print('Kur, by Deepgram -- deep learning made easy')
 	print('Version: {}'.format(__version__))
 	print('Homepage: {}'.format(__homepage__))
+
 
 ###############################################################################
 def do_monitor(args):
@@ -488,7 +497,7 @@ def main():
 	""" Entry point for the Kur command-line script.
 	"""
 
-
+	pdb.set_trace()
 	### Take args from console to this main()
 	args = parse_args()
 
@@ -566,6 +575,9 @@ def main():
 
 	### Let's run the core function to perform and exit system
 	logger.warning("Let's executing %s(args) ... ... ", args.func)
+
+
+	# pdb.set_trace()
 	sys.exit(args.func(args) or 0)
 
 	### args.func are defined inside parse_args(), go up for details

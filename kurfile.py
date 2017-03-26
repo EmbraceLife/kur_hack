@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
+import pdb
 import os
 import copy
 import socket
@@ -62,7 +62,7 @@ class Kurfile:
 			engine: Engine instance. The templating engine to use in parsing.
 				If None, a Passthrough engine is instantiated.
 		"""
-
+		# pdb.set_trace()
 		## prepare an engine
 		# pass on an Engine instance or instantiate a Passthrough engine
 		engine = engine or PassthroughEngine()
@@ -113,10 +113,11 @@ class Kurfile:
 		logger.info('Parsing Kurfile...')
 
 
-		logger.warning("I removed duplicated json printout for training, testing, evaluation, validation")
+
 		# These are reserved section names.
 		# The first name in each tuple is the one that we should rely on
 		# internally when we reference `self.data` in Kurfile.
+		# I don't think aliased names are useful here, so comment them out
 		builtin = {
 			'settings' : ('settings', ),
 			'train' : ('train',),# 'training'),
@@ -131,6 +132,7 @@ class Kurfile:
 		# The scope stack.
 		stack = []
 
+
 		# Add default entries.
 		stack.append({
 			'filename' : self.filename,
@@ -139,6 +141,7 @@ class Kurfile:
 			'host' : socket.gethostname()
 		})
 
+		# pdb.set_trace()
 		# Parse the settings (backends, globals, hyperparameters, ...)
 		self._parse_section(
 			self.engine, builtin['settings'], stack, include_key=False)
@@ -256,7 +259,7 @@ class Kurfile:
 
 	###########################################################################
 	#### What does provider instance look like?
-	
+
 	def get_provider(self, section):
 		""" Creates the provider corresponding to a part of the Kurfile.
 
@@ -731,42 +734,67 @@ class Kurfile:
 				This function follows symlinks.
 			"""
 			filename = os.path.expanduser(os.path.expandvars(filename))
+			### import os; os.stat?
+			# os.stat('mnist.yml')
+			# Out[17]: os.stat_result(st_mode=33261, st_ino=25720561, st_dev=16777220, st_nlink=1, st_uid=501, st_gid=20, st_size=428, st_atime=1490431602, st_mtime=1490267634, st_ctime=1490362412)
 			stat = os.stat(filename)
 			return (stat.st_dev, stat.st_ino)
 
 		# Process the "loaded" iterable.
 		loaded = loaded or set()
 
+		# if source is a string, make it filename, set strategy None
 		if isinstance(source, str):
 			filename = source
 			strategy = None
+
+		# if source is a dict, and if `source` is not a key in source dict
+		# then raise an enrror
 		elif isinstance(source, dict):
 			if 'source' not in source:
 				raise ParsingError('Error while parsing source file {}. '
 					'Missing required "source" key in the include '
 					'dictionary: {}.'.format(context or 'top-level', source))
+
+			## if `source` is a key of source, then make its value filename
 			filename = source.pop('source')
+			## Assign source['method'] or None to strategy
 			strategy = source.pop('method', None)
+
+			### What does ignore extra key in include dictionary mean????
 			for k in source:
 				warnings.warn('Warning while parsing source file {}. '
 					'Ignoring extra key in an "include" dictionary: {}.'
 					.format(context or 'top-level', k))
+
+		### If source is not string nor dictionary, raise error
 		else:
 			raise ParsingError('Error while parsing source file {}. '
 				'Expected each "include" to be a string or a dictionary. '
 				'Received: {}'.format(context or 'top-level', source))
 
+
 		logger.info('Parsing source: %s, included by %s.', source,
 			context or 'top-level')
 
+		# if context == True, get proper filename path
 		if context:
 			filename = os.path.join(os.path.dirname(context), filename)
+
+		# make the path a full path
 		expanded = os.path.expanduser(os.path.expandvars(filename))
+
+		# if the full path is not a file name, raise error
 		if not os.path.isfile(expanded):
 			raise IOError('Error while parsing source file {}. No such '
 				'source file found: {}. Path was expanded to: {}'.format(
 				context or 'top-level', filename, expanded))
+
+		# convert full path to file ids
 		file_id = get_id(expanded)
+
+		### if the file id is found in loaded (a set), then raise warning
+		### return nothing
 		if file_id in loaded:
 			logger.warning('Skipping an already included source file: %s. '
 				'This may have unintended consequences, since the merge '
@@ -774,9 +802,12 @@ class Kurfile:
 				'refactor your Kurfile to avoid circular includes.',
 				expanded)
 			return {}
+
+		### If file_id is new to loaded or not loaded before, then add this file id onto loaded set
 		else:
 			loaded.add(file_id)
 
+		### The key line to create parsed data from kurfile
 		### read a kurfile.yml out and assign to data
 		try:
 			# import kur; kur.reader.Reader.read_file?
@@ -786,9 +817,17 @@ class Kurfile:
 				expanded)
 			raise
 
-		### get include section content out, assign to new_sources
+		### assign data['include'] or [] to new_sources
 		# d={}; d.pop?
 		new_sources = data.pop('include', [])
+
+		# new_sources: The object to evaluate. If it is a string, then
+        # it should be evaluated for template substitution and returned.
+        # Otherwise, the behavior depends on `recursive`. If `recursive`
+        # is True, then container types(dict, list, tuple), are
+        # recursively evaluated, preserving the original Python structure
+        # as much as possible.
+		# kur.engine.Engine.evaluate?
 		engine.evaluate(new_sources, recursive=True)
 		if isinstance(new_sources, str):
 			new_sources = [new_sources]
@@ -810,6 +849,11 @@ class Kurfile:
 				data,
 				strategy=strategy
 			)
+
+		# logger.warning("the type of data: %s \n the order of keys: %s", type(data), data.keys())
+
+		# let's transform data into OrderedDict
+
 
 		return data
 
@@ -875,6 +919,8 @@ class Kurfile:
 			- This will replace the values of `self.data` with the evaluated
 			  version.
 		"""
+		# pdb.set_trace()
+
 		if isinstance(section, str):
 			section = (section, )
 
@@ -884,6 +930,7 @@ class Kurfile:
 		for key in section:
 			if key in self.data:
 				break
+		# this else linked with the immediate if
 		else:
 			if required:
 				raise ValueError(
@@ -891,8 +938,12 @@ class Kurfile:
 			else:
 				return None
 
+		# Context management for Engine scopes
+		# [dict,dict] a list of scopes used here
 		with ScopeStack(engine, stack + [{key : self.data[key]}]):
 			evaluated = engine.evaluate(self.data[key], recursive=True)
+			# engine.evaluate(expexpression) returns expression
+
 
 		if not include_key:
 			if evaluated is not None:
@@ -901,6 +952,7 @@ class Kurfile:
 						'Section "{}" should contain key/value pairs.'
 						.format(key))
 				stack.append(evaluated)
+
 		stack.append({key : evaluated})
 
 		# Now, just in case this was aliased, let's make sure we keep our
